@@ -1,28 +1,17 @@
 <?php
-	session_start();
-	/*
-	//$err = null;
-	$username = '';
-	$password = '';
-	//$_POST['username'] = null;
-	//$_POST['password'] = null;
-	*/
-/*
- *	Database Connection to MySQL using PDO
- *
- */
+session_start();
+
+require_once '../Database.php';
+
+$dbh = new Database();
 
 
+// send user to admin page if the seesion is already existing
 if ( (isset($_SESSION['username']) && isset($_SESSION['password'])) && ($_SESSION['username'] == 'admin' && $_SESSION['password'] == 'worldskills') ) {
 	header("Location: admin.php");	
 	exit;
-} else {	
-	try { // handling connection errors
-		$dbh = new PDO('mysql:host=localhost;dbname=js_blog', 'root', '', array(PDO::ATTR_PERSISTENT => TRUE)); // persistent connection is on
-		
-	} catch ( PDOException $e ) {	
-		die("Unable to connect: " . $e->getMessage() . "<br/>");
-	}
+} else {	// or display login form
+	
 	
 	echo "<form action='" . htmlspecialchars($_SERVER['PHP_SELF']) . "' method='POST' >"; // htmlspecialcharacters to prevent attackers from injecting HTML or JavaScript
 	echo "<label for='username'>Username: </label>";
@@ -37,17 +26,24 @@ if ( (isset($_SESSION['username']) && isset($_SESSION['password'])) && ($_SESSIO
 	
 	
 }
+
+// check username and password when user click login button
 if ( isset($_POST['submit']) ) {
-	$stmt = $dbh->prepare("SELECT username, password FROM users WHERE username='admin' ");		
-		if ( $stmt->execute()) {
-			$row = $stmt->fetch();
+	$sql = "SELECT username, password FROM users WHERE username='admin'";
+	$auth = $dbh->myquery($sql);
+	if($auth->num_rows > 0) {
+		while($row = $auth->fetch_assoc()) {
 			if ( $row['username'] == $_POST['username'] && $row['password'] == $_POST['password'] ) {				
 				$_SESSION['username'] = $_POST['username'];
 				$_SESSION['password']  = $_POST['password'];
 				header("Location:admin.php");
 				
 			} 
+			
 		}
+	}
+	
+	
 }
 
 		
