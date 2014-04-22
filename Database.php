@@ -1,7 +1,5 @@
 <?php
 
-require_once('config.php');
-
 /*
  *	Database CLASS
  *	- creates instance in the constructor using configuratiions from "config.php"
@@ -11,11 +9,17 @@ require_once('config.php');
 class Database{
 
 	private $_mysqli; // holds db handler
+	
+	const SERVER = 'localhost';
+	const USERNAME = 'root';
+	const PASSWORD = '';
+	const DATABASE = 'js_blog';
+	
 
 	public function __construct()
 	{
 		// Connect to DB
-		$this->_mysqli = new mysqli(SERVER, USERNAME, PASSWORD, DATABASE);
+		$this->_mysqli = new mysqli(self::SERVER, self::USERNAME, self::PASSWORD, self::DATABASE);
 
 		if(mysqli_connect_errno()) {
 
